@@ -19,14 +19,14 @@ export default function Header() {
           <h1>OkesBan</h1>
         </Link>
       </h1>
-      <nav className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+      {/* <nav className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
         <Link
           className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
           key={2}
           href={{ pathname: "/survey" }}
           prefetch={false}
         >
-          {"Form Library"}
+          {"Form"}
         </Link>
         <Link
           className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
@@ -36,7 +36,7 @@ export default function Header() {
         >
           {"Dashboard"}
         </Link>
-        {/* <Link
+        <Link
             className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
             key={6}
             href={{pathname: "/tabulator"}}
@@ -51,8 +51,8 @@ export default function Header() {
             prefetch={false}
           >
             {"PDF Generator"}
-          </Link> */}
-      </nav>
+          </Link>
+      </nav> */}
     </header>
   )
 }
