@@ -1,0 +1,170 @@
+export const json = {
+  title: "ASHESI Shuttle Request form",
+  pages: [
+    {
+      name: "TripDetails",
+      title: "Trip Details",
+      elements: [
+        {
+          type: "radiogroup",
+          name: "TripType",
+          title: "Trip Type",
+          choices: [
+            { value: "RoundTrip", text: "Round Trip" },
+            { value: "OneWay", text: "One-Way" },
+          ],
+        },
+        {
+          type: "panel",
+          name: "Depature",
+          elements: [
+            {
+              type: "text",
+              name: "departureDate",
+              title: "Departure Date",
+              inputType: "date",
+            },
+            {
+              type: "text",
+              name: "departureTime",
+              startWithNewLine: false,
+              title: "Departure Time",
+              inputType: "time",
+            },
+          ],
+        },
+        {
+          type: "dropdown",
+          name: "deptpickupLocation",
+          title: "DEPART Pickup Location",
+          choices: [
+            { value: "AshesiCampus", text: "Ashesi Campus" },
+            { value: "AccraMall", text: "Accra Mall" },
+            { value: "RitzJunction", text: "Ritz Junction" },
+            {
+              value: "AdentaBarrier",
+              text: "Adenta Barrier (TOTAL Filling Station)",
+            },
+            { value: "PresecBusStop", text: "PRESEC Bus Stop" },
+          ],
+        },
+        {
+          type: "dropdown",
+          name: "deptdropoffLocation",
+          startWithNewLine: false,
+          title: "DEPART Drop-Off Location",
+          choices: [
+            { value: "AccraMall", text: "Accra Mall" },
+            { value: "AshesiCampus", text: "Ashesi Campus" },
+            { value: "KwabenyaShell", text: "Kwabenya SHELL" },
+            { value: "AtomicJunction", text: "Atomic Junction/Overpass" },
+            { value: "LegonOkponglo", text: "Legon - Okponglo Bus Stop" },
+          ],
+        },
+        {
+          type: "panel",
+          name: "Return",
+          elements: [
+            {
+              type: "text",
+              name: "returnDate",
+              title: "Return Date",
+              inputType: "date",
+            },
+            {
+              type: "text",
+              name: "returnTime",
+              startWithNewLine: false,
+              title: "Return Time",
+              inputType: "time",
+            },
+          ],
+        },
+        {
+          type: "dropdown",
+          name: "retnpickupLocation",
+          title: "RETURN Pickup Location",
+          choices: [
+            { value: "AshesiCampus", text: "Ashesi Campus" },
+            { value: "AccraMall", text: "Accra Mall" },
+            { value: "RitzJunction", text: "Ritz Junction" },
+            {
+              value: "AdentaBarrier",
+              text: "Adenta Barrier (TOTAL Filling Station)",
+            },
+            { value: "PresecBusStop", text: "PRESEC Bus Stop" },
+          ],
+        },
+        {
+          type: "dropdown",
+          name: "retndropoffLocation",
+          startWithNewLine: false,
+          title: "RETURN Drop-Off Location",
+          choices: [
+            { value: "AccraMall", text: "Accra Mall" },
+            { value: "AshesiCampus", text: "Ashesi Campus" },
+            { value: "KwabenyaShell", text: "Kwabenya SHELL" },
+            { value: "AtomicJunction", text: "Atomic Junction/Overpass" },
+            { value: "LegonOkponglo", text: "Legon - Okponglo Bus Stop" },
+          ],
+        },
+        {
+          type: "text",
+          name: "firstName",
+          title: "First Name",
+          isRequired: true,
+        },
+        {
+          type: "text",
+          name: "lastName",
+          startWithNewLine: false,
+          title: "Last Name",
+          isRequired: true,
+        },
+        {
+          type: "text",
+          name: "emailAddress",
+          title: "Email",
+          inputType: "email",
+        },
+        {
+          type: "text",
+          name: "phoneNumber",
+          title: "Phone Number",
+          isRequired: true,
+          inputType: "tel",
+        },
+        {
+          type: "boolean",
+          name: "paymentMade",
+          title: "Have you made payment?",
+          isRequired: true,
+        },
+        {
+          type: "dropdown",
+          name: "paymentMethod",
+          visibleIf: "{paymentMade} = true",
+          title: "Payment Method",
+          isRequired: true,
+          requiredIf: "{paymentMade} = true",
+          choices: [
+            { value: "MTNMomo", text: "MTN MoMo" },
+            { value: "VodaCash", text: "Vodafone Cash" },
+            { value: "ATCash", text: "AT Cash" },
+            { value: "BankTransfer", text: "Bank Transfer" },
+          ],
+        },
+        {
+          type: "text",
+          name: "paymentID",
+          visibleIf: "{paymentMade} = true",
+          title: "Payment ID",
+          isRequired: true,
+          requiredIf: "{paymentMade} = true",
+        },
+      ],
+    },
+  ],
+  gridLayoutEnabled: true,
+  headerView: "advanced",
+};
