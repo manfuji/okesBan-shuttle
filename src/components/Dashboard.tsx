@@ -1,137 +1,180 @@
 'use client'
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  DataGrid,
+  GridColDef,
+  GridToolbarContainer,
+  GridToolbarFilterButton,
+} from "@mui/x-data-grid";
+import {
+  Box,
+  MenuItem,
+  Select,
+  Typography,
+  InputLabel,
+  FormControl,
+  CircularProgress,
+  Button,
+} from "@mui/material";
+import * as XLSX from "xlsx";
 
-import { useEffect, useState } from "react";
-import { json } from "../../data/dashboard_data";
-import { VisualizationPanel } from "survey-analytics";
-import "survey-analytics/survey.analytics.css";
-import { Model } from "survey-core";
-import { BarChart, PieChart, XAxis, Bar, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
-import { CircularProgress, Alert, Typography, Box, Divider } from '@mui/material';
-
-export default function Dashboard() {
-  const [vizPanel, setVizPanel] = useState<VisualizationPanel | null>(null);
+const SurveyTable = () => {
   const [surveyData, setSurveyData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [pickupFilter, setPickupFilter] = useState("");
+  const [departureDateFilter, setDepartureDateFilter] = useState("");
 
   useEffect(() => {
-    async function fetchData() {
+    const fetchSurveyData = async () => {
       try {
         const res = await fetch("/api/saveSurvey");
         const data = await res.json();
         setSurveyData(data);
-        setLoading(false);
-
-        const survey = new Model(json);
-        const panel = new VisualizationPanel(survey.getAllQuestions(), data);
-        setVizPanel(panel);
       } catch (err) {
-        setError("Failed to load survey data.");
+        console.error("Error fetching survey data:", err);
+      } finally {
         setLoading(false);
       }
-    }
-
-    fetchData();
+    };
+    fetchSurveyData();
   }, []);
 
-  const transformDataForCharts = (data: any[]) => {
-    const tripTypeCount: any = {};
-    const paymentMadeCount: any = { true: 0, false: 0 };
+  const pickupLocations = useMemo(() =>
+    Array.from(new Set((surveyData || []).map(entry => entry.deptpickupLocation).filter(Boolean)))
+    , [surveyData]);
 
-    data.forEach((entry) => {
-      // Count TripType occurrences
-      tripTypeCount[entry.TripType] = (tripTypeCount[entry.TripType] || 0) + 1;
+  const departureDates = useMemo(() =>
+    Array.from(new Set((surveyData || []).map(entry => entry.departureDate).filter(Boolean)))
+    , [surveyData]);
 
-      // Count paymentMade occurrences
-      if (entry.paymentMade) {
-        paymentMadeCount.true += 1;
-      } else {
-        paymentMadeCount.false += 1;
-      }
+  const filteredData = useMemo(() => {
+    return (surveyData || []).filter((entry) => {
+      return (
+        (pickupFilter === "" || entry.deptpickupLocation === pickupFilter) &&
+        (departureDateFilter === "" || entry.departureDate === departureDateFilter)
+      );
     });
+  }, [surveyData, pickupFilter, departureDateFilter]);
 
-    // Convert counts into chart data format
-    const tripTypeData = Object.keys(tripTypeCount).map((type) => ({
-      name: type,
-      count: tripTypeCount[type],
-    }));
+  const columns: GridColDef[] = [
+    { field: "firstName", headerName: "First Name", flex: 1 },
+    { field: "lastName", headerName: "Last Name", flex: 1 },
+    { field: "emailAddress", headerName: "Email", flex: 2 },
+    { field: "phoneNumber", headerName: "Phone", flex: 1 },
+    { field: "TripType", headerName: "Trip Type", flex: 1 },
+    { field: "departureDate", headerName: "Departure Date", flex: 1 },
+    { field: "departureTime", headerName: "Departure Time", flex: 1 },
+    { field: "deptpickupLocation", headerName: "Pickup Location", flex: 1 },
+    { field: "deptdropoffLocation", headerName: "Dropoff Location", flex: 1 },
+    { field: "returnDate", headerName: "Return Date", flex: 1 },
+    { field: "returnTime", headerName: "Return Time", flex: 1 },
+    { field: "paymentMade", headerName: "Paid?", flex: 0.8, type: "boolean" },
+    { field: "paymentMethod", headerName: "Payment Method", flex: 1 },
+    { field: "timestamp", headerName: "Submitted At", flex: 1.5 },
+  ];
 
-    const paymentData = [
-      { name: "Paid", value: paymentMadeCount.true },
-      { name: "Not Paid", value: paymentMadeCount.false },
-    ];
+  // --- Export Handlers ---
 
-    return { tripTypeData, paymentData };
+  const exportToCSV = () => {
+    const headers = columns.map(col => col.headerName).join(",");
+    const rows = filteredData.map(row =>
+      columns.map(col => `"${row[col.field] ?? ""}"`).join(",")
+    );
+    const csvContent = [headers, ...rows].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "survey_data.csv";
+    link.click();
   };
 
-  const { tripTypeData, paymentData } = transformDataForCharts(surveyData);
-
-  // Check the data before rendering charts
-  console.log(tripTypeData, paymentData);
-
-  if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (error) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-        <Alert severity="error">{error}</Alert>
-      </Box>
-    );
-  }
+  const exportToExcel = () => {
+    const ws = XLSX.utils.json_to_sheet(filteredData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "SurveyData");
+    XLSX.writeFile(wb, "survey_data.xlsx");
+  };
 
   return (
-    <Box sx={{ padding: 3 }}>
-      <Typography variant="h4" align="center" gutterBottom color="primary">
-        Survey Dashboard
-      </Typography>
-      <Typography variant="body1" align="center" paragraph color="textSecondary">
-        Here is a breakdown of the survey responses.
-      </Typography>
+    <Box>
+      <div className="px-24">
+        <Typography variant="h5" gutterBottom>
+          Survey Submissions
+        </Typography>
 
-      {/* Visualizations */}
-      <Typography variant="h5" gutterBottom align="center" color="primary">
-        Visual Analysis
-      </Typography>
+        <Box display="flex" gap={2} mb={2}>
+          <FormControl size="small" sx={{ minWidth: 200 }}>
+            <InputLabel id="pickup-label">Pickup Location</InputLabel>
+            <Select
+              labelId="pickup-label"
+              value={pickupFilter}
+              label="Pickup Location"
+              onChange={(e) => setPickupFilter(e.target.value)}
+            >
+              <MenuItem value="">All</MenuItem>
+              {pickupLocations.map((location) => (
+                <MenuItem key={location} value={location}>
+                  {location}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-      {/* Bar Chart for TripType */}
-      <Typography variant="h6" align="center" color="textSecondary">Trip Type Breakdown</Typography>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={tripTypeData}>
-          <XAxis dataKey="name" />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="count" fill="#8884d8" />
-        </BarChart>
-      </ResponsiveContainer>
+          <FormControl size="small" sx={{ minWidth: 200 }}>
+            <InputLabel id="departure-date-label">Departure Date</InputLabel>
+            <Select
+              labelId="departure-date-label"
+              value={departureDateFilter}
+              label="Departure Date"
+              onChange={(e) => setDepartureDateFilter(e.target.value)}
+            >
+              <MenuItem value="">All</MenuItem>
+              {departureDates.map((date) => (
+                <MenuItem key={date} value={date}>
+                  {date}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-      <Divider sx={{ marginTop: 4 }} />
+          <Box display="flex" alignItems="center" gap={2}>
+            <Button variant="outlined" onClick={exportToCSV}>
+              Export CSV
+            </Button>
+            <Button variant="outlined" onClick={exportToExcel}>
+              Export Excel
+            </Button>
+          </Box>
+        </Box>
 
-      {/* Pie Chart for Payment Status */}
-      <Typography variant="h6" align="center" color="textSecondary" mt={4}>Payment Status Breakdown</Typography>
-      <ResponsiveContainer width="100%" height={300}>
-        <PieChart>
-          <Pie
-            data={paymentData}
-            dataKey="value"
-            nameKey="name"
-            cx="50%"
-            cy="50%"
-            outerRadius={150}
-            fill="#8884d8"
-            label
-          >
-            {paymentData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={index % 2 === 0 ? "#82ca9d" : "#8884d8"} />
-            ))}
-          </Pie>
-        </PieChart>
-      </ResponsiveContainer>
+        {loading ? (
+          <Box display="flex" justifyContent="center" py={5}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <DataGrid
+            rows={filteredData.map((row, index) => ({ id: index, ...row }))}
+            columns={columns}
+            pageSizeOptions={[5, 10, 25]}
+            autoHeight
+            disableRowSelectionOnClick
+            initialState={{
+              sorting: {
+                sortModel: [{ field: "timestamp", sort: "desc" }],
+              },
+            }}
+            slots={{ toolbar: GridToolbarContainer }}
+            slotProps={{
+              toolbar: {
+                children: <GridToolbarFilterButton />,
+              },
+            }}
+          />
+        )}
+      </div>
     </Box>
   );
-}
+};
+
+export default SurveyTable;

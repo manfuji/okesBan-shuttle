@@ -12,6 +12,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^7.0.2",
+    "@mui/x-data-grid": "^8.0.0",
     "ace-builds": "latest",
     "jspdf-autotable": "^3.8.2",
     "next": "14.1.0",
@@ -24,7 +25,8 @@
     "survey-creator-react": "latest",
     "survey-pdf": "latest",
     "survey-react-ui": "latest",
-    "wordcloud": "^1.2.2"
+    "wordcloud": "^1.2.2",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/node": "^20",

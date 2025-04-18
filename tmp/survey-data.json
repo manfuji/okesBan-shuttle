@@ -1,0 +1,19 @@
+[
+  {
+    "TripType": "RoundTrip",
+    "departureDate": "2025-05-02",
+    "departureTime": "22:11",
+    "deptpickupLocation": "AccraMall",
+    "deptdropoffLocation": "KwabenyaShell",
+    "returnDate": "2025-04-27",
+    "returnTime": "11:08",
+    "retnpickupLocation": "AdentaBarrier",
+    "retndropoffLocation": "AshesiCampus",
+    "firstName": "sdsfnbv",
+    "lastName": "fghhdxzsa",
+    "emailAddress": "baba@gmail.com",
+    "phoneNumber": "0202020202",
+    "paymentMade": false,
+    "timestamp": "2025-04-18T07:09:35.062Z"
+  }
+]
