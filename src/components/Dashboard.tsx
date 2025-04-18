@@ -163,7 +163,26 @@ const SurveyTable = () => {
               sorting: {
                 sortModel: [{ field: "timestamp", sort: "desc" }],
               },
+              columns: {
+                columnVisibilityModel: {
+                  firstName: true,
+                  lastName: true,
+                  emailAddress: true,
+                  phoneNumber: false,
+                  TripType: false,
+                  departureDate: false,
+                  departureTime: false,
+                  deptpickupLocation: false,
+                  deptdropoffLocation: false,
+                  returnDate: false,
+                  returnTime: false,
+                  paymentMade: false,
+                  paymentMethod: false,
+                  timestamp: false,
+                },
+              },
             }}
+
             slots={{ toolbar: GridToolbarContainer }}
             slotProps={{
               toolbar: {
